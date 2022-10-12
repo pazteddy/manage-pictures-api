@@ -40,7 +40,10 @@ class PostsController < ApplicationController
   
   def latest
     @posts = Post.last
-    render json: PostSerializer.new(@posts).serializable_hash[:data][:attributes]
+    if @posts.nil?
+      render json: { message: "No posts found" }, status: :not_found
+    else
+      render json: PostSerializer.new(@posts).serializable_hash[:data][:attributes]  
   end
 
   private
