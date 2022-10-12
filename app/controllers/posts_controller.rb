@@ -4,8 +4,11 @@ class PostsController < ApplicationController
   # GET /posts
   def index
     @posts = Post.all
-
-    render json: @posts
+    if @posts.empty?
+      render json: { message: "No posts found" }, status: :not_found
+    else
+      render json: PostSerializer.new(@posts).serializable_hash[:data].map { |hash| hash[:attributes] }
+    end
   end
 
   # GET /posts/1
@@ -39,11 +42,11 @@ class PostsController < ApplicationController
   end
   
   def latest
-    @posts = Post.last
-    if @posts.nil?
-      render json: { message: "No posts found" }, status: :not_found
+    @post = Post.last
+    if @post.nil?
+      render json: { message: "No post found" }, status: :not_found
     else
-      render json: PostSerializer.new(@posts).serializable_hash[:data][:attributes] 
+      render json: PostSerializer.new(@post).serializable_hash[:data][:attributes] 
     end
   end
 
